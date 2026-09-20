@@ -17,7 +17,7 @@ jobs:
       - name: Start Tailscale
         run: |
           sudo tailscaled & sleep 8
-          sudo tailscale up --authkey ${{ secrets.TAILSCALE_AUTHKEY }} --hostname=gh-vps --ssh
+          sudo tailscale up --authkey ${{ secrets.VPS }} --hostname=gh-vps --ssh
 
       - name: Keep alive
         run: |
