@@ -10,17 +10,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install tmate
+      - name: Install Tailscale
         run: |
-          sudo apt-get update
-          sudo apt-get install -y tmate
+          curl -fsSL https://tailscale.com/install.sh | sh
 
-      - name: Start tmate session
+      - name: Start Tailscale
         run: |
-          tmate -S /tmp/tmate.sock new-session -d
-          tmate -S /tmp/tmate.sock wait tmate-ready
-          echo "===ССЫЛКА_НАЧАЛО==="
-          tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}'
-          tmate -S /tmp/tmate.sock display -p '#{tmate_web}'
-          echo "===ССЫЛКА_КОНЕЦ==="
+          sudo tailscaled & sleep 8
+          sudo tailscale up --authkey ${{ secrets.TAILSCALE_AUTHKEY }} --hostname=gh-vps --ssh
+
+      - name: Keep alive
+        run: |
+          echo "Сервер в сети Tailscale. Ищи gh-vps в приложении Tailscale."
           sleep 21000
