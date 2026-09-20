@@ -1,7 +1,5 @@
 name: VPS Session
 on:
-  schedule:
-    - cron: '0 */6 * * *'
   workflow_dispatch:
 
 jobs:
@@ -9,22 +7,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 350
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install prerequisites
+      - name: Install tmate
         run: |
-          sudo apt update
-          sudo apt install -y tmate curl unzip sudo net-tools neofetch
+          sudo apt-get update
+          sudo apt-get install -y tmate
 
-      - name: Install Tailscale official script
+      - name: Start tmate session
         run: |
-          curl -fsSL https://tailscale.com/install.sh | sh
-
-      - name: Start Tailscale
-        run: |
-          sudo tailscaled & sleep 8
-          sudo tailscale up --authkey ${{ secrets.TAILSCALE_AUTHKEY }} --hostname=biralo || echo "Tailscale already up"
-
-      - name: Start tmate session for SSH access
-        uses: mxschmitt/action-tmate@v3
+          tmate -S /tmp/tmate.sock new-session -d
+          tmate -S /tmp/tmate.sock wait tmate-ready
+          echo "===ССЫЛКА_НАЧАЛО==="
+          tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}'
+          tmate -S /tmp/tmate.sock display -p '#{tmate_web}'
+          echo "===ССЫЛКА_КОНЕЦ==="
+          sleep 21000
